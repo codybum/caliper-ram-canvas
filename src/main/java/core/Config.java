@@ -34,10 +34,8 @@ public class Config {
 		System.out.println(group + " " + param + " =" + sparam);
 		if(sparam.equals("1"))
 		{
-			System.out.println("return true");
 			return true;
 		}
-		System.out.println("return false");
 		return false;
 		
 	}
