@@ -28,6 +28,18 @@ public class Config {
 		}
 	}
 	
+	public boolean getParam(String group, String param)
+	{
+		String sparam = ini.get(group,param);
+		
+		if(sparam.equals(1))
+		{
+			return true;
+		}
+		return false;
+		
+	}
+	
 	public String getAMPQServer()
 	{
 		return ini.get("ampq","ampq_server");

@@ -34,33 +34,44 @@ public class StreamEngine {
 			
 			incomingAMPQQueue = new ConcurrentLinkedQueue<String>();
 			incomingHANAQueue = new ConcurrentLinkedQueue<String>();
+			//enableamqp=<no=0, yes=1>
+			//enablesqs=<no=0, yes=1>
+			//enablehana=<no=0, yes=1>
+					
+			if(conf.getParam("general","enableamqp"))
+			{
+				System.out.println("Starting AMPQWriter...");
+				AMPQWriter ampq = new AMPQWriter(conf.getAMPQServer(), conf.getAMPQLogin(), conf.getAMPQPassword(),conf.getAMPQOutExchange());
+				Thread ampq_thread = new Thread(ampq);
+				ampq_thread.start();
+				System.out.println("AMPQWriter Active...");
+				while(!AMPQWriterActive)
+				{
+					Thread.sleep(1000);
+				}
+			}
 			
-    		System.out.println("Starting AMPQWriter...");
-			AMPQWriter ampq = new AMPQWriter(conf.getAMPQServer(), conf.getAMPQLogin(), conf.getAMPQPassword(),conf.getAMPQOutExchange());
-			Thread ampq_thread = new Thread(ampq);
-    		ampq_thread.start();
-    		System.out.println("AMPQWriter Active...");
-    		while(!AMPQWriterActive)
-    		{
-    			Thread.sleep(1000);
+			if(conf.getParam("general","enablehana"))
+			{	
+				System.out.println("Starting HANAWriter...");
+				HANAWriter hana = new HANAWriter(conf.getHANAServer(),conf.getHANALogin(), conf.getHANAPassword());
+				Thread hana_thread = new Thread(hana);
+				hana_thread.start();
+				while(!HANAWriterActive)
+				{
+					Thread.sleep(1000);
+				}
+				System.out.println("HANAWriter Active...");
+			}
+			
+    		if(conf.getParam("general","enablesqs"))
+    		{	
+    			System.out.println("Starting SQSReader...");
+    			SQSReader sqr = new SQSReader(conf.getSQSAccessKey(), conf.getSQSSecretKey(), conf.getSQSQueueUrl());
+    			Thread sqr_thread = new Thread(sqr);
+    			sqr_thread.start();
+    			System.out.println("SQSReader Active...");
     		}
-    		
-    		System.out.println("Starting HANAWriter...");
-    		HANAWriter hana = new HANAWriter(conf.getHANAServer(),conf.getHANALogin(), conf.getHANAPassword());
-			Thread hana_thread = new Thread(hana);
-    		hana_thread.start();
-    		while(!HANAWriterActive)
-    		{
-    			Thread.sleep(1000);
-    		}
-    		System.out.println("HANAWriter Active...");
-    		
-    		System.out.println("Starting SQSReader...");
-			SQSReader sqr = new SQSReader(conf.getSQSAccessKey(), conf.getSQSSecretKey(), conf.getSQSQueueUrl());
-			Thread sqr_thread = new Thread(sqr);
-    		sqr_thread.start();
-    		System.out.println("SQSReader Active...");
-    		
 		}
 		catch(Exception ex)
 		{
