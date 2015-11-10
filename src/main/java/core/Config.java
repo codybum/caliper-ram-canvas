@@ -31,7 +31,7 @@ public class Config {
 	public boolean getParam(String group, String param)
 	{
 		String sparam = ini.get(group,param);
-		
+		System.out.println(group + " " + param + " =" + sparam);
 		if(sparam.equals(1))
 		{
 			return true;
